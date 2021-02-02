@@ -35,7 +35,7 @@ function User_Requests(props) {
   const { rhFactor } = props.route.params;
 
 
-  const [status, setStatus] = useState('null')
+  const [status, setStatus] = useState(null)
   const [name, setName] = useState(null)
   const [email, setEmai] = useState(null)
   const [users, setUsers] = useState([])
