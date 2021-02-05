@@ -10,7 +10,7 @@ import {
     TouchableOpacity
 } from 'react-native';
 
-
+import Spinner from 'react-native-loading-spinner-overlay';
 import {
     Header,
     LearnMoreLinks,
@@ -29,6 +29,7 @@ import useColorScheme from 'react-native/Libraries/Utilities/useColorScheme';
 
 function DonorHome(props) {
 
+    const [spinner, setSpinner] = useState(false)
     const { UserName } = props.route.params;
     const { Intrest } = props.route.params;
     const { userRHFactor } = props.route.params;
@@ -42,28 +43,47 @@ function DonorHome(props) {
     const [hiden, setHide] = useState(null)
 
     useEffect(() => {
-        database().ref("/").child("Donors/" + userBloodGroup + "/" + userRHFactor + "/" + UserName + "/requests/").on("child_added", (data) => {
-            users.push(data.val());
-            setrequests(users);
-
-            if (requests === null || requests === []) {
-                setHide("true")
-            }
-            else {
-                setHide("false")
-                console.group(requests)
-            }
-
-        })
+        useEffectOne();
+       
     }, []);
 
+
+const useEffectOne = () => {
+
+    setSpinner(true)
+    database().ref("/").child("Donors/" + userBloodGroup + "/" + userRHFactor + "/" + UserName + "/requests/").on("child_added", (data) => {
+        users.push(data.val());
+        setrequests(users);
+
+        if (requests === null || requests === []) {
+            setHide("true")
+        }
+        else {
+            setHide("false")
+            console.group(requests)
+        }
+
+    })
+
+   setInterval(() => {
+                setSpinner(false)
+            }, 5000);
+}
+
+
     const toMoreInfo = (e) => {
-        props.navigation.navigate("DonorInfo", { UserName: e, donorName: UserName})
-      }
-    
+        props.navigation.navigate("DonorInfo", { UserName: e, donorName: UserName })
+    }
+
     return (
         <>
             <View style={styles.container}>
+
+                <Spinner
+                    visible={spinner === true}
+                    textContent={'Loading...'}
+                    textStyle={{ color: '#fff' }}
+                />
 
                 <View
                     style={styles.subContainer1} >
@@ -140,51 +160,51 @@ function DonorHome(props) {
 
 
                     <ScrollView
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}>
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}>
 
 
-            <FlatList
-            data={requests}
-            key={requests.key}
-              renderItem={(data) => {
-                return (
+                        <FlatList
+                            data={requests}
+                            key={requests.key}
+                            renderItem={(data) => {
+                                return (
 
-                  <View style={styles.myMainDispayCont}>
+                                    <View style={styles.myMainDispayCont}>
 
-                    <Text style={styles.font1}>{data.item.requestName}{"\n"}
-                      <Text style={{ paddingTop: 15, color: '#3250ce' }}>
-                        Status: {data.item.requestStatus} 
-                      </Text>
-                    </Text>
+                                        <Text style={styles.font1}>{data.item.requestName}{"\n"}
+                                            <Text style={{ paddingTop: 15, color: '#3250ce' }}>
+                                                Status: {data.item.requestStatus}
+                                            </Text>
+                                        </Text>
 
-                    <TouchableOpacity
+                                        <TouchableOpacity
 
-                      // style={{ backgroundColor: '#3250ce', color: 'white', marginLeft: 'auto',  , marginRight: 30, marginTop: 10 }}
-                      style={styles.button1}
-                      onPress={() => toMoreInfo(data.item.requestName)}
-                      activeOpacity={0.9}>
+                                            // style={{ backgroundColor: '#3250ce', color: 'white', marginLeft: 'auto',  , marginRight: 30, marginTop: 10 }}
+                                            style={styles.button1}
+                                            onPress={() => toMoreInfo(data.item.requestName)}
+                                            activeOpacity={0.9}>
 
 
 
-                      <Text
-                        style={{ height: "80%", paddingTop: 12, paddingLeft: 12, paddingRight: 10, color: 'white', fontWeight: 'bold' }}>
-                        More Info
+                                            <Text
+                                                style={{ height: "80%", paddingTop: 12, paddingLeft: 12, paddingRight: 10, color: 'white', fontWeight: 'bold' }}>
+                                                More Info
                      </Text>
-                    </ TouchableOpacity>
+                                        </ TouchableOpacity>
 
-                  </View>
-
-
-
-                )
-
-              }}
-              keyExtractor={users => users.id}
-            />
+                                    </View>
 
 
-          </ScrollView>
+
+                                )
+
+                            }}
+                            keyExtractor={users => users.id}
+                        />
+
+
+                    </ScrollView>
 
 
 
@@ -250,20 +270,20 @@ const styles = StyleSheet.create({
     },
     button1:
     {
-      backgroundColor: '#3250ce',
-      marginLeft: 'auto',
-      marginRight: 30,
-      marginTop: 10,
-      borderRadius: 10,
-      height: "70%",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 7,
-      },
-      shadowOpacity: 0.43,
-      shadowRadius: 9.51,
-      elevation: 8,
+        backgroundColor: '#3250ce',
+        marginLeft: 'auto',
+        marginRight: 30,
+        marginTop: 10,
+        borderRadius: 10,
+        height: "70%",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 7,
+        },
+        shadowOpacity: 0.43,
+        shadowRadius: 9.51,
+        elevation: 8,
     },
 
     f001:
@@ -290,12 +310,12 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
     },
     font1:
-  {
-    paddingTop: 10,
-    color: 'black',
-    fontSize: 20,
+    {
+        paddingTop: 10,
+        color: 'black',
+        fontSize: 20,
 
-  }
+    }
 });
 
 export default DonorHome;

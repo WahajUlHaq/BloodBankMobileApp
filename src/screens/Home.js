@@ -19,6 +19,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 import { Button, Item, Input, Label, List, ListItem, Text, Card, CardItem, Thumbnail, Icon, Left, Body, Right } from 'native-base';
 
 import FooterComp from './Footer'
@@ -35,8 +36,8 @@ function HomeScreen(props) {
   const { rhFactor } = props.route.params;
   const { BloodGroup } = props.route.params;
   const { Option } = props.route.params;
-
-  Option
+  const [spinner, setSpinner] = useState(false)
+  // Option
   const [status, setStatus] = useState(null)
   const [name, setName] = useState(null)
   const [email, setEmai] = useState(null)
@@ -51,6 +52,11 @@ function HomeScreen(props) {
   const [selectedDonor, setselectedDonor] = useState(null)
 
   useEffect(() => {
+
+    setSpinner(true)
+    setInterval(() => {
+        setSpinner(false)
+      }, 5000);
 
     if (Option === "Search") {
       database().ref("/").child("Donors/" + BloodGroup + "/" + rhFactor).on("child_added", (data) => {
@@ -436,6 +442,12 @@ function HomeScreen(props) {
   return (
     <>
       <View style={styles.container}>
+
+        <Spinner
+          visible={spinner === true}
+          textContent={'Loading...'}
+          textStyle={{ color: '#fff' }}
+        />
 
         <View
           style={styles.subContainer1} >

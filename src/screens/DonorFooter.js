@@ -19,9 +19,9 @@ function DonorFooter(props) {
     const requests = () => {
         navigation.navigate("DonorHome")
     }
-    const myProfile = () => {
-        navigation.navigate("Login")
-    }
+    // const myProfile = () => {
+    //     navigation.navigate("Login")
+    // }
     const backToLogin = () => {
         navigation.navigate("Login")
        // console.log(props.UserName)

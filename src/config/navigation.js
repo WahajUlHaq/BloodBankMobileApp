@@ -12,6 +12,7 @@ import User_Requests from '../screens/Requests';
 import DonorApprove from '../screens/Approve';
 import Info from '../screens/Info';
 import DonorInfo from '../screens/donorInfo';
+import RedirecterHomeDonor from '../screens/Redirecter';
 
 const Stack = createStackNavigator();
 
@@ -175,6 +176,20 @@ function Navigation(props) {
         }}
          />
 
+<Stack.Screen hideNavBar={true} name="RedirecterHomeDonor" component={RedirecterHomeDonor} 
+        options={{
+          title: '',
+          headerStyle: {
+            backgroundColor: '#3250ce',
+            height : 0
+          },
+          headerTintColor: 'white',
+          headerTitleStyle: {
+          
+          },
+
+        }}
+         />
 
      </Stack.Navigator>
 

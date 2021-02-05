@@ -10,6 +10,7 @@ import {
 
 } from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import {
   Header,
@@ -30,6 +31,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 function User_Requests(props) {
 
+  const [spinner, setSpinner] = useState(false)
   const { UserName } = props.route.params;
   const { BloodGroup } = props.route.params;
   const { rhFactor } = props.route.params;
@@ -47,14 +49,18 @@ function User_Requests(props) {
   const [requestHide, setRequestHide] = useState(null)
 
   const [selectedDonor, setselectedDonor] = useState(null)
- 
+
   useEffect(() => {
+    setSpinner(true)
+    setInterval(() => {
+        setSpinner(false)
+    }, 5000);
 
     database().ref("/").child("Recipients/" + UserName + "/requests/").on("child_added", (data) => {
       users.push(data.val());
       setDonors(users);
 
-      
+
 
       if (donors === null) {
         setHide("true")
@@ -68,14 +74,20 @@ function User_Requests(props) {
   }, []);
 
 
-    const infoBtn = (e) => {
-      props.navigation.navigate("Info", { UserName: UserName, BloodGroup: BloodGroup, rhFactor: rhFactor, donorName: e })
-      
-        }
+  const infoBtn = (e) => {
+    props.navigation.navigate("Info", { UserName: UserName, BloodGroup: BloodGroup, rhFactor: rhFactor, donorName: e })
+
+  }
 
   return (
     <>
       <View style={styles.container}>
+
+        <Spinner
+          visible={spinner === true}
+          textContent={'Loading...'}
+          textStyle={{ color: '#fff' }}
+        />
 
         <View
           style={styles.subContainer1} >
@@ -214,7 +226,7 @@ function User_Requests(props) {
 
 
         </View>
-        
+
       </View>
       <FooterComp />
     </>

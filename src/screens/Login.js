@@ -24,6 +24,8 @@ import app from '@react-native-firebase/app';
 
 import { Button, Item, Input, Label } from 'native-base';
 
+import Spinner from 'react-native-loading-spinner-overlay';
+
 function Login(props) {
 
   const [status, setStatus] = useState('Log In To Your Account')
@@ -31,8 +33,11 @@ function Login(props) {
   const [password, setPassword] = useState(null)
   const [nameChecker, setnameChecker] = useState([])
   const [stdCheck, setstdCheck] = useState(null)
+  const [spinner, setSpinner] = useState(false)
 
   const authToHome = () => {
+    setSpinner(true)
+
     window.intrest = null
     window.bloodGroup = null
     window.RHFactor = null
@@ -55,19 +60,23 @@ function Login(props) {
             .then((snapshot) => {
 
               if (password === snapshot.val().donorPassword) {
+           
                 setStatus('Successfully Logged In')
                 setStatus('Log In To Your Account')
-
+                setSpinner(false)
+                
                 if (window.intrest === "Donors") {
                   props.navigation.navigate("DonorHome", { UserName: name, Intrest: window.intrest, userRHFactor: snapshot.val().donorRHfactor, userBloodGroup: snapshot.val().donorbloodGroup })
                 }
 
               }
               else {
+                setSpinner(false)
                 setStatus('Incorrect Credentials')
               }
             })
             .catch(() => {
+              setSpinner(false)
               setStatus('Server Error, Try Again')
             })
         }
@@ -76,11 +85,13 @@ function Login(props) {
           database().ref(window.intrest + "/" + name).once('value')
             .then((snapshot) => {
               if (password === snapshot.val().recipientsPassword) {
+                setSpinner(false)
                 setStatus('Successfully Logged In')
                 setStatus('Log In To Your Account')
                 props.navigation.navigate("Search_Page", { UserName: name, Intrest: window.intrest })
               }
               else {
+                setSpinner(false)
                 setStatus('Incorrect Credentials')
               }
             })
@@ -90,12 +101,14 @@ function Login(props) {
         }
 
         else {
+          setSpinner(false)
           setStatus('Server Error')
 
         }
       })
 
       .catch(() => {
+        setSpinner(false)
         setStatus('User Not Found')
       })
 
@@ -120,6 +133,11 @@ function Login(props) {
 
       <View
         style={styles.container}>
+                <Spinner
+          visible={spinner === true}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <View style={styles.bg}>
           <Image
             source={{
@@ -231,6 +249,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: "100%",
     height: "100%"
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
   },
   subContainer1:
   {

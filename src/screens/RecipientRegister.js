@@ -11,6 +11,7 @@ import {
     Picker
 } from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import {
     Header,
@@ -38,37 +39,48 @@ function Recipient_Register(props) {
     const [bloodGroup, setBloodGroup] = useState('')
     const [rhFactor, setRHFactor] = useState('')
 
+    const [spinner, setSpinner] = useState(false)
+
     const authToRegister = () => {
 
-
+        setSpinner(true)
+         
         if (name === null || name === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
 
         else if (email === null || email === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
 
         else if (password === null || password === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
 
         else if (number === null || number === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
 
         else if (country === null || country === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
 
         else if (city === null || city === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
         else if (bloodGroup === null || bloodGroup === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
 
         else if (rhFactor === null || rhFactor === "") {
+            setSpinner(false)
             setStatus('Error Try Again')
         }
 
@@ -91,14 +103,17 @@ function Recipient_Register(props) {
                         .then(() => {
                             setStatus('Success! Please Wait')
                             setStatus('Recipient Registeration')
+                            setSpinner(false)
                             props.navigation.navigate("Login")
                         })
                         .catch(() => {
+                            setSpinner(false)
                             setStatus('Error Contact Admin')
 
                         })
                 })
                 .catch(() => {
+                    setSpinner(false)
                     setStatus('Error Contact Admin')
 
                 })
@@ -109,6 +124,11 @@ function Recipient_Register(props) {
         <>
             <View
                 style={styles.container}>
+                <Spinner
+                    visible={spinner === true}
+                    textContent={'Loading...'}
+                    textStyle={{ color: '#fff' }}
+                />
 
                 <View
                     style={styles.subContainer1} >
@@ -228,7 +248,7 @@ function Recipient_Register(props) {
                                 style={styles.inp2}>
                                 <Label>Set Account Password</Label>
                                 <Input
-                  autoCompleteType = "off"
+                                    autoCompleteType="off"
 
                                     maxLength={20}
                                     onChangeText={(text) => setPassword(text)}

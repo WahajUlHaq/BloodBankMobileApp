@@ -10,6 +10,7 @@ import {
 
 } from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import {
     Header,
@@ -35,6 +36,7 @@ function DonorInfo(props) {
     const { donorName } = props.route.params;
 
 
+    const [spinner, setSpinner] = useState(false)
     const [country, setCountry] = useState(null)
     const [city, setCity] = useState(null)
 
@@ -47,6 +49,11 @@ function DonorInfo(props) {
 
 
     useEffect(() => {
+
+        setSpinner(true)
+        setInterval(() => {
+            setSpinner(false)
+          }, 3000);
 
         database().ref("AuthUsers" + "/" + donorName + "/").once('value')
             .then((snapshot) => {
@@ -81,6 +88,8 @@ function DonorInfo(props) {
     });
 
     const accept = (e) => {
+        setSpinner(true)
+      
         database().ref('Donors/' + BloodGroup + "/" + rhFactor + "/" + donorName + "/requests/" + UserName + "/").update({
             requestStatus: 'Accepted',
 
@@ -89,14 +98,27 @@ function DonorInfo(props) {
         database().ref('Recipients/' + UserName + "/requests/" + donorName + "/").update({
             requestStatus: 'Accepted',
         })
+        
+        setInterval(() => {
+            setSpinner(false)
+          }, 3000);
 
-        props.navigation.navigate("DonorHome", { UserName: donorName, BloodGroup: BloodGroup, rhFactor: rhFactor })
+        setTimeout(() => { 
+            alert('You have accepted blood donation request of ' + UserName + ", Status Will be Updated Soon.")
+            props.navigation.navigate("DonorHome", { UserName: donorName, BloodGroup: BloodGroup, rhFactor: rhFactor })
+        }, 2000);
 
     }
 
     return (
         <>
             <View style={styles.container}>
+
+            <Spinner
+                    visible={spinner === true}
+                    textContent={'Loading...'}
+                    textStyle={{color: '#fff'}}
+                />
 
                 <View
                     style={styles.subContainer1} >

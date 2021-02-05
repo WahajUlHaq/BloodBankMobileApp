@@ -10,6 +10,7 @@ import {
 
 } from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import {
     Header,
@@ -34,7 +35,7 @@ function Info(props) {
     const { donorName } = props.route.params;
     // const { rhFactor } = props.route.params;
     // const { BloodGroup } = props.route.params;
-
+    const [spinner, setSpinner] = useState(false)
 
     const [country, setCountry] = useState(null)
     const [city, setCity] = useState(null)
@@ -47,7 +48,19 @@ function Info(props) {
     const [rhFactor, setrhFactor] = useState(null)
 
     useEffect(() => {
+        useEffectOne();
+    }, []);
 
+    useEffect(() => {
+        useEffectTwo();
+    });
+
+    const useEffectOne = () => {
+
+        setSpinner(true)
+        setInterval(() => {
+            setSpinner(false)
+        }, 5000);
 
         database().ref("AuthUsers" + "/" + donorName + "/").once('value')
             .then((snapshot) => {
@@ -70,10 +83,9 @@ function Info(props) {
             .then((snapshot) => {
                 setUsersrequest(snapshot.val().requestStatus)
             })
-    
-    }, []);
+    }
 
-    useEffect(() => {
+    const useEffectTwo = () => {
         database().ref("Donors" + "/" + BloodGroup + "/" + rhFactor + "/" + donorName + "/").once('value')
             .then((snapshot) => {
                 setCity(snapshot.val().donorCity)
@@ -82,13 +94,16 @@ function Info(props) {
 
             })
 
-            database().ref("Recipients/" + UserName + "/requests/" + donorName + "/").once('value')
+        database().ref("Recipients/" + UserName + "/requests/" + donorName + "/").once('value')
             .then((snapshot) => {
                 setUsersrequest(snapshot.val().requestStatus)
             })
-    });
+    }
+
 
     const infoBtn = (e) => {
+
+        setSpinner(true)
         database().ref('Donors/' + BloodGroup + "/" + rhFactor + "/" + e + "/requests/" + UserName + "/").update({
             requestName: UserName,
             requestStatus: "Not Accepted"
@@ -103,13 +118,28 @@ function Info(props) {
 
 
         })
-        props.navigation.navigate("User_Requests", { UserName: UserName, BloodGroup: BloodGroup, rhFactor: rhFactor, donorName: e })
+
+        setInterval(() => {
+            setSpinner(false)
+           
+        }, 3000);
+
+        setTimeout(() => { 
+            alert('You have reqesuted blood from' + donorName + '. You will be updated once donor accept your request.')
+            props.navigation.navigate("User_Requests", { UserName: UserName, BloodGroup: BloodGroup, rhFactor: rhFactor, donorName: e })
+        }, 2000);
 
     }
 
     return (
         <>
             <View style={styles.container}>
+
+                <Spinner
+                    visible={spinner === true}
+                    textContent={'Loading...'}
+                    textStyle={{ color: '#fff' }}
+                />
 
                 <View
                     style={styles.subContainer1} >
@@ -143,10 +173,10 @@ function Info(props) {
                                     Name: {donorName}
                                 </Text>
 
-                                <Text style={{fontSize: 19,color: 'red', paddingBottom: 5, height : requestUser === 'Accepted' ? 'auto' : '0%'}}>
+                                <Text style={{ fontSize: 19, color: 'red', paddingBottom: 5, height: requestUser === 'Accepted' ? 'auto' : '0%' }}>
                                     Phone Number : {phoneNumber}
                                 </Text>
-                            
+
                                 <Text style={styles.Country}>
                                     Country : {country}
                                 </Text>
@@ -169,16 +199,16 @@ function Info(props) {
                                 </Text>
 
 
-                                <Text style={{ marginTop: requestUser === undefined ? 15 : 0,color: '#3250ce', height: requestUser === undefined ? 'auto' : '0%' }}>
+                                <Text style={{ marginTop: requestUser === undefined ? 15 : 0, color: '#3250ce', height: requestUser === undefined ? 'auto' : '0%' }}>
                                     To see phone number and email id, please request blood from this donor.
                                 </Text>
 
-                                <Text style={{ marginTop: requestUser === 'Not Accepted' ? 15 : 0,color: '#3250ce', height: requestUser === 'Not Accepted' ? 'auto' : '0%' }}>
+                                <Text style={{ marginTop: requestUser === 'Not Accepted' ? 15 : 0, color: '#3250ce', height: requestUser === 'Not Accepted' ? 'auto' : '0%' }}>
                                     You have requested blood from this donor. Once he accept your request you can see his phone number to contact him.
                                 </Text>
 
                                 <TouchableOpacity
-                                    style={{ shadowOffset: {width: 0,  height: 5,} ,shadowOpacity: 0.43, shadowRadius: 9.51, elevation: 5,  backgroundColor: requestUser === "Accepted" ? '#3250ce' : '#3250ce', marginTop: 20, borderRadius : 10, paddingBottom: 13, }}
+                                    style={{ shadowOffset: { width: 0, height: 5, }, shadowOpacity: 0.43, shadowRadius: 9.51, elevation: 5, backgroundColor: requestUser === "Accepted" ? '#3250ce' : '#3250ce', marginTop: 20, borderRadius: 10, paddingBottom: 13, }}
                                     onPress={() => infoBtn(donorName)}
                                     activeOpacity={0.9}
                                     disabled={requestUser === 'Not Accepted' || requestUser === 'Accepted'}

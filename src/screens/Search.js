@@ -12,6 +12,7 @@ import {
 
 } from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import {
     Header,
@@ -29,6 +30,7 @@ import { Button, Item, Input, Label } from 'native-base';
 
 function Search(props) {
 
+    const [spinner, setSpinner] = useState(false)
 
     const [status, setStatus] = useState('Select Details Below')
     const [bloodGroup, setBloodGroup] = useState(null)
@@ -42,30 +44,46 @@ function Search(props) {
 
 
     useEffect(() => {
-    
-        database().ref("Recipients/" + UserName + "/").once('value')
-        .then((snapshot) => {
-            setrhfactor(snapshot.val().recipientsrRHfactor)
-            setBloodgroup(snapshot.val().recipientsbloodGroup)
-        })
-        .catch((error) => {
-            console.log(error)
-        })
 
-      }, []);
+        setSpinner(true)
+        setInterval(() => {
+            setSpinner(false)
+          }, 2000);
+
+        database().ref("Recipients/" + UserName + "/").once('value')
+            .then((snapshot) => {
+                setrhfactor(snapshot.val().recipientsrRHfactor)
+                setBloodgroup(snapshot.val().recipientsbloodGroup)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
+    }, []);
 
     const searchWithProfile = () => {
+
+        setSpinner(true)
+
         setStatus('Searching...')
 
         if (bloodgroup === null || bloodgroup === "") {
+            setInterval(() => {
+                setSpinner(false)
+              }, 3000);
             setStatus('Error Try Again')
         }
         else if (rhfactor === null || rhfactor === "") {
+            setInterval(() => {
+                setSpinner(false)
+              }, 3000);
             setStatus('Error Try Again')
         }
 
         else {
-
+            setInterval(() => {
+                setSpinner(false)
+              }, 3000);
             setStatus('Select Details Below')
             props.navigation.navigate("HomeScreen", { UserName: UserName, BloodGroup: bloodgroup, rhFactor: rhfactor, Option: "Profile" })
         }
@@ -75,17 +93,26 @@ function Search(props) {
 
     const search = () => {
 
+        setSpinner(true)
         setStatus('Searching...')
 
         if (bloodGroup === null || bloodGroup === "") {
+            setInterval(() => {
+                setSpinner(false)
+              }, 3000);
             setStatus('Error Try Again')
         }
         else if (rhFactor === null || rhFactor === "") {
+            setInterval(() => {
+                setSpinner(false)
+              }, 3000);
             setStatus('Error Try Again')
         }
 
         else {
-
+            setInterval(() => {
+                setSpinner(false)
+              }, 3000);
             setStatus('Select Details Below')
             props.navigation.navigate("HomeScreen", { UserName: UserName, Intrest: Intrest, BloodGroup: bloodGroup, rhFactor: rhFactor, Option: "Search" })
         }
@@ -95,7 +122,11 @@ function Search(props) {
         <>
             <View
                 style={styles.container}>
-
+                <Spinner
+                    visible={spinner === true}
+                    textContent={'Loading...'}
+                    textStyle={styles.spinnerTextStyle}
+                />
                 <View
                     style={styles.subContainer1} >
 
@@ -171,9 +202,9 @@ function Search(props) {
             </Text>
 
                             </Button>
-                            <View style={{width: "85%", height : 120}}>
-                            <Text style={{textAlign: 'center', color: 'red'}}>
-    Searching blood according to profile will display all blood group which {bloodgroup} {rhfactor} can accept.
+                            <View style={{ width: "85%", height: 120 }}>
+                                <Text style={{ textAlign: 'center', color: 'red' }}>
+                                    Searching blood according to profile will display all blood group which {bloodgroup} {rhfactor} can accept.
 </Text>
                             </View>
 
@@ -198,6 +229,9 @@ const styles = StyleSheet.create({
         height: "100%",
         backgroundColor: '#3250ce'
     },
+    spinnerTextStyle: {
+        color: '#FFF'
+      },
     subContainer1:
     {
         width: "100%",
